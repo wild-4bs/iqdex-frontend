@@ -485,7 +485,9 @@ export const useMyUsersStore = defineStore({
             method: "POST",
             body: {
               user_id: userId,
-            },
+            }, headers: {
+              "Authorization": `Bearer ${localStorage.token}`
+            }
           });
         }
         const response: any = await $fetch(

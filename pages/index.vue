@@ -193,13 +193,8 @@ const sendBadge = async () => {
     homeStore.user = response.user
     registerButtonContent.value = "Badge Registered"
     clearData()
-    setTimeout(() => {
-      router.push("/success")
-    }, 200);
+    router.push("/success")
   } catch (error) {
-    if (error.name == 'FetchError') {
-      navigateTo('/login')
-    }
     registerButtonContent.value = "Register Badge"
     runErrorToast({
       title: "Something went wrong.",
