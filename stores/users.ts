@@ -120,7 +120,7 @@ export const useMyUsersStore = defineStore({
           }
         }
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         dashboardStore.errorLoading()
@@ -159,7 +159,7 @@ export const useMyUsersStore = defineStore({
           await dashboardStore.getUsers();
         }
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         dashboardStore.errorLoading();
@@ -192,7 +192,7 @@ export const useMyUsersStore = defineStore({
         runToast(response.message);
         await dashboardStore.getUsers();
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         dashboardStore.errorLoading();
@@ -227,7 +227,7 @@ export const useMyUsersStore = defineStore({
           await dashboardStore.getUsers();
         }
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         dashboardStore.errorLoading();
@@ -263,7 +263,7 @@ export const useMyUsersStore = defineStore({
           await dashboardStore.getUsers();
         }
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         dashboardStore.endLoading();
@@ -298,7 +298,7 @@ export const useMyUsersStore = defineStore({
           await dashboardStore.getUsers();
         }
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         dashboardStore.endLoading();
@@ -403,7 +403,7 @@ export const useMyUsersStore = defineStore({
         dashboardStore.endLoading();
         runToast(response.message);
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         dashboardStore.errorLoading();
@@ -459,7 +459,7 @@ export const useMyUsersStore = defineStore({
         dashboardStore.endLoading()
         runToast("Pdf downloaded")
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         runErrorToast({
@@ -505,7 +505,7 @@ export const useMyUsersStore = defineStore({
         dashboardStore.endLoading();
         runToast(response.message);
       } catch (error: any) {
-        if (error.name == 'FetchError') {
+        if (!error.statusCode) {
           navigateTo('/login')
         }
         dashboardStore.errorLoading();
