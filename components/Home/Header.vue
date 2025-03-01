@@ -30,7 +30,7 @@ header {
 
   .logo {
     img {
-      width: 170px;
+      width: 150px;
     }
   }
 
@@ -39,18 +39,18 @@ header {
     justify-content: space-between;
     flex-direction: column;
     width: 90%;
-    padding: .5rem 0;
+    padding: .3rem 0;
 
     h1 {
       font-weight: bold;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
     }
 
     p {
       width: 90%;
       font-weight: 600;
       color: rgb(51, 51, 51);
-      font-size: .9rem;
+      font-size: .8rem;
     }
   }
 }

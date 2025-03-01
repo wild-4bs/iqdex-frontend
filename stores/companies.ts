@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
 export const useMyCompaniesStore = defineStore({
-  id: 'myCompaniesStore',
+  id: "myCompaniesStore",
   state: () => ({
     companies: [] as any,
     filteredCompanies: [] as any,
@@ -10,58 +10,53 @@ export const useMyCompaniesStore = defineStore({
   }),
   actions: {
     async getCompanies() {
-      const router = useRouter()
-      const homeStore = useMyHomeStore()
-      const { runErrorToast } = useShadcnHelpers()
+      const router = useRouter();
+      const homeStore = useMyHomeStore();
+      const { runErrorToast } = useShadcnHelpers();
       try {
         const response: any = await $fetch(`${homeStore.baseUrl}/api/company`, {
           method: "GET",
-          headers: {
-            "Authorization": `Bearer ${localStorage.token}`
-          }
-        })
-        this.companies = response.companies
-        this.filteredCompanies = response.companies
+          headers: homeStore.headers,
+        });
+        this.companies = response.companies;
+        this.filteredCompanies = response.companies;
       } catch (error: any) {
-        if (error.name == 'FetchError') {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         runErrorToast({
           title: "Something went wrong.",
-          message: error.statusMessage
-        })
+          message: error.statusMessage,
+        });
       }
     },
     async deleteCompany(id: any) {
-      const dashboardStore = useMyDashboardStore()
-      const homeStore = useMyHomeStore()
-      const { runErrorToast, runToast } = useShadcnHelpers()
+      const dashboardStore = useMyDashboardStore();
+      const homeStore = useMyHomeStore();
+      const { runErrorToast, runToast } = useShadcnHelpers();
       try {
         if (!this.canDoActions) return;
-        this.canDoActions = false
-        dashboardStore.startLoading()
-        const response: any = await $fetch(`${homeStore.baseUrl}/api/company/${id}`, {
-          method: "DELETE",
-          headers: {
-            "Authorization": `Bearer ${localStorage.token}`
+        this.canDoActions = false;
+        dashboardStore.startLoading();
+        const response: any = await $fetch(
+          `${homeStore.baseUrl}/api/company/${id}`,
+          {
+            method: "DELETE",
+            headers: homeStore.headers,
           }
-        })
-        this.canDoActions = true
-        dashboardStore.endLoading()
-        await this.getCompanies()
-        runToast(response.message)
+        );
+        this.canDoActions = true;
+        dashboardStore.endLoading();
+        await this.getCompanies();
+        runToast(response.message);
       } catch (error: any) {
-        if (error.name == 'FetchError') {
-          navigateTo('/login')
-        }
-        dashboardStore.errorLoading()
+        homeStore.handleError(error);
+        dashboardStore.errorLoading();
         runErrorToast({
           title: "Company Error",
-          message: error.statusMessage
-        })
+          message: error.statusMessage,
+        });
       } finally {
-        this.canDoActions = true
+        this.canDoActions = true;
       }
-    }
-  }
-})
+    },
+  },
+});

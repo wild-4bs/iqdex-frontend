@@ -117,13 +117,13 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .image {
-  @media (max-width: 767px) {
+  @media (max-width: 600px) {
     flex-direction: column;
   }
 
   .imageInput {
     min-width: 230px;
-
+    max-height: 230px;
     @media (max-width: 767px) {
       width: 100% !important;
     }
@@ -139,10 +139,10 @@ onMounted(() => {
 
   .eg {
     img {
-      width: 140px;
+      width: 130px;
     }
 
-    @media (max-width: 1080px) {
+    @media (max-width: 600px) {
       flex-direction: column;
 
       img {

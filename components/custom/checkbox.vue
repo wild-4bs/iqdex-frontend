@@ -54,7 +54,7 @@ const setValue = (value, linkTo) => {
 .input {
   display: flex;
   align-items: center;
-  gap: .5rem;
+  gap: .3rem;
   flex: 1;
   width: 100%;
   cursor: pointer;

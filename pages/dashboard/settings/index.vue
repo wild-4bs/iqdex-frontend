@@ -23,9 +23,7 @@ const getBadge = async () => {
   try {
     const response = await $fetch(`${homeStore.baseUrl}/api/admin`, {
       method: "GET"
-      , headers: {
-        "Authorization": `Bearer ${localStorage.token}`
-      }
+      , headers: homeStore.headers
     })
     admin.value = response.admin
     badge_expired.value = response.admin.badge_expired
@@ -48,9 +46,7 @@ const toggleBadge = async () => {
         body: {
           id: admin.value.id
         },
-        headers: {
-          "Authorization": `Bearer ${localStorage.token}`
-        }
+        headers:homeStore.headers
       })
       badge_expired.value = response.badge_expired
       runToast(response.message)
@@ -60,9 +56,7 @@ const toggleBadge = async () => {
         body: {
           id: admin.value.id
         },
-        headers: {
-          "Authorization": `Bearer ${localStorage.token}`
-        }
+        headers: homeStore.headers
       })
       badge_expired.value = response.badge_expired
       runToast(response.message)

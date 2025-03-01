@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
 type usersResponse = {
   ok: boolean;
@@ -7,7 +7,7 @@ type usersResponse = {
 };
 
 export const useMyDashboardStore = defineStore({
-  id: 'myDashboardStore',
+  id: "myDashboardStore",
   state: () => ({
     users: [] as any[],
     cases: [] as any[],
@@ -15,56 +15,54 @@ export const useMyDashboardStore = defineStore({
     loading: {
       error: false,
       progress: 0,
-      show: false
+      show: false,
     },
-    companies: []
+    companies: [],
   }),
   actions: {
     async getUsers() {
       const homeStore = useMyHomeStore();
       const { runErrorToast } = useShadcnHelpers();
       try {
-        const response = await $fetch<usersResponse>(`${homeStore.baseUrl}/api/user`, {
-          method: 'GET',
-          headers: {
-            "Authorization": `Bearer ${localStorage.token}`
+        const response = await $fetch<usersResponse>(
+          `${homeStore.baseUrl}/api/user`,
+          {
+            method: "GET",
+            headers: homeStore.headers,
           }
-        });
+        );
         if (response.ok) {
           this.users = response.users;
-          this.filteredUsers = response.users
+          this.filteredUsers = response.users;
         }
       } catch (error: any) {
-        if (error.name == 'FetchError') {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         runErrorToast({
-          title: 'Error while fetching users.',
-          message: error.statusMessage
+          title: "Error while fetching users.",
+          message: error.statusMessage,
         });
       }
     },
     startLoading() {
-      this.loading.show = true
+      this.loading.show = true;
       setTimeout(() => {
-        this.loading.progress = 88
+        this.loading.progress = 88;
       }, 300);
     },
     endLoading() {
-      this.loading.progress = 100
+      this.loading.progress = 100;
       setTimeout(() => {
-        this.loading.show = false
-        this.loading.progress = 0
+        this.loading.show = false;
+        this.loading.progress = 0;
       }, 1000);
     },
     errorLoading() {
-      this.loading.error = true
-      this.loading.progress = 0
+      this.loading.error = true;
+      this.loading.progress = 0;
       setTimeout(() => {
-        this.loading.show = false
+        this.loading.show = false;
       }, 1000);
-    }
+    },
   },
-  getters: {
-  }
+  getters: {},
 });

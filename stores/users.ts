@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import axios from 'axios'
+import axios from "axios";
 
 export const useMyUsersStore = defineStore({
   id: "myUsersStore",
@@ -12,47 +12,47 @@ export const useMyUsersStore = defineStore({
     inputs: {
       first_name: {
         value: "",
-        error: false
+        error: false,
       },
       last_name: {
         value: "",
-        error: false
+        error: false,
       },
       email: {
         value: "",
-        error: false
+        error: false,
       },
       company_name: {
         value: "",
-        error: false
+        error: false,
       },
       country: {
         value: "",
-        error: false
+        error: false,
       },
       country_code: {
         value: "",
-        error: false
+        error: false,
       },
       phone_number: {
         value: "",
-        error: false
+        error: false,
       },
       position: {
         value: "",
-        error: false
+        error: false,
       },
       participation_type: {
         value: "",
-        error: false
+        error: false,
       },
       send_via: {
         value: "",
-        error: false
+        error: false,
       },
       image: {
         value: "",
-        error: false
+        error: false,
       },
     } as any,
     buttonContent: {
@@ -61,16 +61,20 @@ export const useMyUsersStore = defineStore({
   }),
   actions: {
     async createUser() {
-      const dashboardStore = useMyDashboardStore()
-      const homeStore = useMyHomeStore()
-      const countriesStore = useMyCountriesStore()
-      const { runErrorToast, runToast } = useShadcnHelpers()
+      const dashboardStore = useMyDashboardStore();
+      const homeStore = useMyHomeStore();
+      const countriesStore = useMyCountriesStore();
+      const { runErrorToast, runToast } = useShadcnHelpers();
       if (!this.canDoActions) return;
-      this.canDoActions = false
+      this.canDoActions = false;
       const canSubmit = (inputs: any) => {
         let allFilled = true;
         for (const key in inputs) {
-          if (inputs.hasOwnProperty(key) && key != 'country' && key != 'country_code') {
+          if (
+            inputs.hasOwnProperty(key) &&
+            key != "country" &&
+            key != "country_code"
+          ) {
             const input = inputs[key];
             if (input.value === "") {
               input.error = true;
@@ -83,56 +87,62 @@ export const useMyUsersStore = defineStore({
         return allFilled;
       };
       try {
-        if (!canSubmit(this.inputs)) return
-        dashboardStore.startLoading()
-        this.inputs.country.value = countriesStore.selectedCountry
-        this.inputs.country_code.value = countriesStore.selectedCountry.idd.root + countriesStore.selectedCountry.idd.suffixes[0]
-        const data = new FormData()
-        data.append("first_name", this.inputs.first_name.value)
-        data.append("last_name", this.inputs.last_name.value)
-        data.append("phone_number", this.inputs.phone_number.value + " " + this.inputs.country_code.value.toString())
-        data.append("email", this.inputs.email.value)
-        data.append("company_name", this.inputs.company_name.value)
-        data.append("country", this.inputs.country.value.name.common)
-        data.append("country_code", this.inputs.country_code.value)
-        data.append("position", this.inputs.position.value)
-        data.append("participation_type", this.inputs.participation_type.value)
-        data.append("send_via", this.inputs.send_via.value)
-        data.append("image", this.inputs.image.value)
-        this.buttonContent.value = "Registering..."
-        const response: any = await $fetch(`${homeStore.baseUrl}/api/user/register`, {
-          method: "POST",
-          body: data,
-          headers: {
-            "Authorization": `Bearer ${localStorage.token}`
+        if (!canSubmit(this.inputs)) return;
+        dashboardStore.startLoading();
+        this.inputs.country.value = countriesStore.selectedCountry;
+        this.inputs.country_code.value =
+          countriesStore.selectedCountry.idd.root +
+          countriesStore.selectedCountry.idd.suffixes[0];
+        const data = new FormData();
+        data.append("first_name", this.inputs.first_name.value);
+        data.append("last_name", this.inputs.last_name.value);
+        data.append(
+          "phone_number",
+          this.inputs.phone_number.value +
+            " " +
+            this.inputs.country_code.value.toString()
+        );
+        data.append("email", this.inputs.email.value);
+        data.append("company_name", this.inputs.company_name.value);
+        data.append("country", this.inputs.country.value.name.common);
+        data.append("country_code", this.inputs.country_code.value);
+        data.append("position", this.inputs.position.value);
+        data.append("participation_type", this.inputs.participation_type.value);
+        data.append("send_via", this.inputs.send_via.value);
+        data.append("image", this.inputs.image.value);
+        this.buttonContent.value = "Registering...";
+        const response: any = await $fetch(
+          `${homeStore.baseUrl}/api/user/register`,
+          {
+            method: "POST",
+            body: data,
+            headers: homeStore.headers,
           }
-        })
-        homeStore.user = response.user
-        this.buttonContent.value = "Badge Registered"
-        runToast(response.message)
-        dashboardStore.endLoading()
-        this.addUser = false
-        await dashboardStore.getUsers()
+        );
+        homeStore.user = response.user;
+        this.buttonContent.value = "Badge Registered";
+        runToast(response.message);
+        dashboardStore.endLoading();
+        this.addUser = false;
+        await dashboardStore.getUsers();
         for (const key in this.inputs) {
           if (this.inputs.hasOwnProperty(key)) {
             const input = this.inputs[key];
-            input.value = ""
+            input.value = "";
           }
         }
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
-        dashboardStore.errorLoading()
-        this.buttonContent.value = "Register Badge"
+        homeStore.handleError(error);
+        dashboardStore.errorLoading();
+        this.buttonContent.value = "Register Badge";
         runErrorToast({
           title: "Something went wrong.",
-          message: error.statusMessage
-        })
-        console.error(error)
+          message: error.statusMessage,
+        });
+        console.error(error);
       } finally {
-        dashboardStore.endLoading()
-        this.canDoActions = true
+        dashboardStore.endLoading();
+        this.canDoActions = true;
       }
     },
     async acceptUser(userId: string) {
@@ -148,9 +158,7 @@ export const useMyUsersStore = defineStore({
           {
             body: { userId },
             method: "POST",
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            headers: homeStore.headers,
           }
         );
         if (response.ok) {
@@ -159,9 +167,7 @@ export const useMyUsersStore = defineStore({
           await dashboardStore.getUsers();
         }
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         dashboardStore.errorLoading();
         runErrorToast({
           message: error.message,
@@ -183,18 +189,14 @@ export const useMyUsersStore = defineStore({
           `${homeStore.baseUrl}/api/user/${userId}`,
           {
             method: "DELETE",
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            headers: homeStore.headers,
           }
         );
         dashboardStore.endLoading();
         runToast(response.message);
         await dashboardStore.getUsers();
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         dashboardStore.errorLoading();
         runErrorToast({
           message: error.statusMessage,
@@ -216,9 +218,7 @@ export const useMyUsersStore = defineStore({
           `${homeStore.baseUrl}/api/user/acceptAll`,
           {
             method: "POST",
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            headers: homeStore.headers,
           }
         );
         if (response.ok) {
@@ -227,9 +227,7 @@ export const useMyUsersStore = defineStore({
           await dashboardStore.getUsers();
         }
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         dashboardStore.errorLoading();
         runErrorToast({
           message: error.message,
@@ -252,9 +250,7 @@ export const useMyUsersStore = defineStore({
           {
             method: "POST",
             body: { userId },
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            headers: homeStore.headers,
           }
         );
         if (response.ok) {
@@ -263,9 +259,7 @@ export const useMyUsersStore = defineStore({
           await dashboardStore.getUsers();
         }
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         dashboardStore.endLoading();
         runErrorToast({
           title: "User rejection Error",
@@ -287,9 +281,7 @@ export const useMyUsersStore = defineStore({
           `${homeStore.baseUrl}/api/user/rejectAll`,
           {
             method: "POST",
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            headers: homeStore.headers,
           }
         );
         if (response.ok) {
@@ -298,9 +290,7 @@ export const useMyUsersStore = defineStore({
           await dashboardStore.getUsers();
         }
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         dashboardStore.endLoading();
         runErrorToast({
           title: "Users rejection Error",
@@ -383,9 +373,7 @@ export const useMyUsersStore = defineStore({
             body: {
               user_id: userId,
             },
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            headers: homeStore.headers,
           });
         }
         const response: any = await $fetch(
@@ -395,17 +383,13 @@ export const useMyUsersStore = defineStore({
             body: {
               user_id: userId,
             },
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            headers: homeStore.headers,
           }
         );
         dashboardStore.endLoading();
         runToast(response.message);
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         dashboardStore.errorLoading();
         runErrorToast({
           title: "Error while sending",
@@ -421,33 +405,34 @@ export const useMyUsersStore = defineStore({
       const { runToast, runErrorToast } = useShadcnHelpers();
       if (!this.canDoActions) return;
       dashboardStore.startLoading();
-      this.canDoActions = false
+      this.canDoActions = false;
       try {
         const user = dashboardStore.users.find((user) => user.id == user.id);
-        let pdfUrl = ''
+        let pdfUrl = "";
         if (user.pdf_file.length < 1) {
-          const pdfRes: any = await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
-            method: "POST",
-            body: {
-              user_id: user.id,
-            },
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
+          const pdfRes: any = await $fetch(
+            `${homeStore.baseUrl}/api/pdf/generate`,
+            {
+              method: "POST",
+              body: {
+                user_id: user.id,
+              },
+              headers: homeStore.headers,
             }
-          });
-          pdfUrl = pdfRes.savedFile.url
+          );
+          pdfUrl = pdfRes.savedFile.url;
         } else {
-          pdfUrl = user.pdf_file[0].url
+          pdfUrl = user.pdf_file[0].url;
         }
         const response = await axios.get(pdfUrl, {
-          responseType: 'arraybuffer',
+          responseType: "arraybuffer",
         });
 
-        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const blob = new Blob([response.data], { type: "application/pdf" });
 
         const url = URL.createObjectURL(blob);
 
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
         link.download = `${user.first_name}.pdf`;
         document.body.appendChild(link);
@@ -456,18 +441,16 @@ export const useMyUsersStore = defineStore({
         URL.revokeObjectURL(url);
         document.body.removeChild(link);
 
-        dashboardStore.endLoading()
-        runToast("Pdf downloaded")
+        dashboardStore.endLoading();
+        runToast("Pdf downloaded");
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         runErrorToast({
           title: "Downloading error",
-          message: error
-        })
+          message: error,
+        });
       } finally {
-        this.canDoActions = true
+        this.canDoActions = true;
       }
     },
     async sendPdfByWhatsapp(userId: any) {
@@ -485,9 +468,8 @@ export const useMyUsersStore = defineStore({
             method: "POST",
             body: {
               user_id: userId,
-            }, headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            },
+            headers: homeStore.headers,
           });
         }
         const response: any = await $fetch(
@@ -497,17 +479,13 @@ export const useMyUsersStore = defineStore({
             body: {
               userId,
             },
-            headers: {
-              "Authorization": `Bearer ${localStorage.token}`
-            }
+            headers: homeStore.headers,
           }
         );
         dashboardStore.endLoading();
         runToast(response.message);
       } catch (error: any) {
-        if (!error.statusCode) {
-          navigateTo('/login')
-        }
+        homeStore.handleError(error);
         dashboardStore.errorLoading();
         runErrorToast({
           title: "Error while sending",
@@ -518,5 +496,4 @@ export const useMyUsersStore = defineStore({
       }
     },
   },
-
 });

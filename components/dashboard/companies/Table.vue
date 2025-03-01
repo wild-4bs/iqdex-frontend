@@ -91,17 +91,13 @@ const update = async () => {
     const dataToUpdate = stringify(selectedCompany.value)
     const response = await $fetch(`${homeStore.baseUrl}/api/company/${selectedCompany.value.id}`, {
       method: "PATCH",
-      body: { newData: JSON.parse(dataToUpdate) }, headers: {
-        "Authorization": `Bearer ${localStorage.token}`
-      }
+      body: { newData: JSON.parse(dataToUpdate) }, headers:homeStore.headers
     })
     dashboardStore.endLoading()
     await companiesStore.getCompanies()
     runToast(response.message)
   } catch (error) {
-    if (error.name == 'FetchError') {
-      navigateTo('/login')
-    }
+    homeStore.handleError(error)
     dashboardStore.errorLoading()
     runErrorToast({
       title: "Company Error",

@@ -66,17 +66,13 @@ const submit = async () => {
       body: {
         name: companyName.value,
         users_limit: users_limit.value
-      }, headers: {
-        "Authorization": `Bearer ${localStorage.token}`
-      }
+      }, headers: homeStore.headers
     })
     await companiesStore.getCompanies()
     dashboardStore.endLoading()
     runToast(response.message)
   } catch (error) {
-    if (error.name == 'FetchError') {
-      navigateTo('/login')
-    }
+    homeStore.handleError(error)
     dashboardStore.errorLoading()
     runErrorToast({
       title: "Company Error",

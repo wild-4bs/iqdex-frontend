@@ -20,6 +20,8 @@
 </template>
 
 <script setup>
+import Cookies from 'universal-cookie';
+
 definePageMeta({
   layout: 'login'
 })
@@ -42,11 +44,9 @@ const login = async () => {
         email: email.value,
         password: password.value,
       },
-      headers: {
-        'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbl9pZCI6IjY3YzFjZGE3MTc1ZGQ3ZTY0MTMzOTdlZCIsImlhdCI6MTc0MDc1ODQ3NiwiZXhwIjoxNzQwODQ0ODc2fQ.8NPo0wQyvaeutOOiAJJSh8uqoDTB0lQVThGrnVRUD8o`
-      },
     })
-    localStorage.setItem("token", response.token)
+    const cookies = new Cookies();
+    cookies.set("auth_token", response.token)
     runToast(response.message)
     buttonContent.value = "Login"
     navigateTo("/dashboard")

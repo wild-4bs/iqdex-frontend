@@ -45,8 +45,8 @@ input {
   border: none;
   border-bottom: 1px solid lightgray;
   background-color: none;
-  padding: .5rem .2rem;
-  transition: .2s;
+  padding: .2rem;
+  transition: .3s;
 
   &.error {
     border-bottom-color: rgb(226, 45, 45);

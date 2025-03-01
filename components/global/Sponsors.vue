@@ -7,7 +7,7 @@
                 </div>
                 <div class="logos grid gap-4 grid-cols-2">
                     <div class="logo" v-for="(logo, i) in category.logos" :key="i">
-                        <img :src="logo" alt="Logo">
+                        <img :src="logo" alt="Logo" width="50px" height="auto">
                     </div>
                 </div>
             </div>

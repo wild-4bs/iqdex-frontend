@@ -8,7 +8,7 @@
           <CustomInput link-to="lastName" placeholder="last name" type="text" />
         </div>
         <div class="group ">
-          <div class="el gap-3 nestedGroup   flex flex-col">
+          <div class="el gap-2 nestedGroup   flex flex-col">
             <CustomCombobox :default-value="defaultValue" :options="countries" />
             <CustomInput link-to="phoneNumber" placeholder="Phone Number" class="mb-2" type="text" />
             <div class="options">
@@ -26,14 +26,14 @@
             <div class="title">
               <h3>Participation Type</h3>
             </div>
-            <div class="options flex flex-col gap-4 w-full">
-              <div class="couple flex justify-between gap-4">
+            <div class="options flex flex-col gap-2 w-full">
+              <div class="couple flex justify-between gap-4 w-full">
                 <CustomCheckbox value="exhibitor" group="participationType" link-to="participationType"
                   title="exhibitor" :error="pTypeError" />
                 <CustomCheckbox value="organizer" group="participationType" link-to="participationType"
                   title="Organizer" :error="pTypeError" />
               </div>
-              <div class="couple flex justify-between gap-4">
+              <div class="couple flex w-full justify-between gap-4">
                 <CustomCheckbox value="press" group="participationType" link-to="participationType" title="Press"
                   :error="pTypeError" />
                 <CustomCheckbox value="visitor" group="participationType" link-to="participationType" title="Visitor"
@@ -53,10 +53,10 @@
         </div>
         <HomeImageInput />
       </div>
-      <div class="submit mt-4">
+      <div class="submit mt-2">
         <button :class="['register py-2 px-4 rounded-sm', canSubmit ? '' : 'cantSubmit']"
           v-html="registerButtonContent"></button>
-        <span class="clear cursor-pointer p-3 select-none" @click="clearData">Clear all</span>
+        <span class="clear cursor-pointer p-2 select-none" @click="clearData">Clear all</span>
       </div>
     </form>
   </main>
@@ -218,15 +218,15 @@ const clearData = () => {
 <style scoped lang="scss">
 .inputs {
   width: 100%;
-  margin-top: 1rem;
+  margin-top: .6rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.4rem;
 
   .group {
     display: flex;
     justify-content: space-between;
-    gap: 5rem;
+    gap: 3rem;
 
     @media (max-width: 1080px) {
       gap: 1rem;
@@ -265,7 +265,7 @@ const clearData = () => {
     user-select: none;
 
     .title {
-      margin-bottom: .6rem;
+      margin-bottom: .3rem;
     }
 
     .couple {
@@ -279,7 +279,7 @@ const clearData = () => {
 .submit {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: .5rem;
 
   .register {
     background-color: rgba(0, 68, 255, 0.884);
