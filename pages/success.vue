@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main class="success">
     <HomeHeader />
     <div class="message flex flex-col gap-4 justify-center">
       <h1 class="text-6xl font-medium">Thank you</h1>

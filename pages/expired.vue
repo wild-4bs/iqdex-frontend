@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main class="expire">
     <HomeHeader />
     <div class="message flex flex-col gap-1 justify-center">
       <h1 class="text-5xl mb-4 font-medium">Thank you for your interest.</h1>
