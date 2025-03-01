@@ -16,7 +16,7 @@
 .layout {
   width: 100%;
   min-height: 100dvh;
-  background-image: url("~/assets/Home/background.png");
+  background-image: url("@/assets/Home/background.png");
   background-size: cover;
   background-repeat: no-repeat;
   display: flex;
