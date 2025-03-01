@@ -77,7 +77,7 @@ const handleFileChange = (files) => {
     })
     return;
   }
-  const maxSize = 5 * 1024 ** 2; // 5MB
+  const maxSize = 25 * 1024 ** 2; // 25MB
   if (file.size > maxSize) {
     runErrorToast({
       title: "Image Error",

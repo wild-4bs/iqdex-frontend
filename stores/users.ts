@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import Cookies from "universal-cookie";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -99,8 +100,8 @@ export const useMyUsersStore = defineStore({
         data.append(
           "phone_number",
           this.inputs.country_code.value.toString() +
-          " " +
-          this.inputs.phone_number.value
+            " " +
+            this.inputs.phone_number.value
         );
         data.append("email", this.inputs.email.value);
         data.append("company_name", this.inputs.company_name.value);
@@ -442,7 +443,7 @@ export const useMyUsersStore = defineStore({
         dashboardStore.endLoading();
         runToast("Pdf downloaded");
       } catch (error: any) {
-        dashboardStore.errorLoading()
+        dashboardStore.errorLoading();
         homeStore.handleError(error);
         runErrorToast({
           title: "Downloading error",
@@ -460,8 +461,6 @@ export const useMyUsersStore = defineStore({
         if (!this.canDoActions) return;
         this.canDoActions = false;
         dashboardStore.startLoading();
-        const user = dashboardStore.users.find((user) => user.id == userId);
-
         await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
           method: "POST",
           body: {
@@ -469,6 +468,8 @@ export const useMyUsersStore = defineStore({
           },
           headers: homeStore.headers,
         });
+        const cookies = new Cookies();
+        const token = cookies.get("auth_token");
         const response: any = await $fetch(
           `${homeStore.baseUrl}/api/pdf/send/whatsapp`,
           {
@@ -476,7 +477,9 @@ export const useMyUsersStore = defineStore({
             body: {
               userId,
             },
-            headers: homeStore.headers,
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
         dashboardStore.endLoading();
