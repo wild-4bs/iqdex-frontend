@@ -433,7 +433,7 @@ export const useMyUsersStore = defineStore({
 
         const link = document.createElement("a");
         link.href = url;
-        link.download = `${user.first_name}.pdf`;
+        link.download = `${user.first_name}_iqdex2025.pdf`;
         document.body.appendChild(link);
         link.click();
 
