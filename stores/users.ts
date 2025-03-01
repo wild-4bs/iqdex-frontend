@@ -477,9 +477,7 @@ export const useMyUsersStore = defineStore({
             body: {
               userId,
             },
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: homeStore.headers,
           }
         );
         dashboardStore.endLoading();
