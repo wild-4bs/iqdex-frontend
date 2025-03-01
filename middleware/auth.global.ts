@@ -3,7 +3,5 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   if (to.fullPath.includes("/dashboard") && !token.value) {
     return navigateTo("/login");
-  } else if (token && to.fullPath == "/login") {
-    return navigateTo("/dashboard");
   }
 });
