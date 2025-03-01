@@ -99,8 +99,8 @@ export const useMyUsersStore = defineStore({
         data.append(
           "phone_number",
           this.inputs.country_code.value.toString() +
-            " " +
-            this.inputs.phone_number.value
+          " " +
+          this.inputs.phone_number.value
         );
         data.append("email", this.inputs.email.value);
         data.append("company_name", this.inputs.company_name.value);
@@ -367,15 +367,13 @@ export const useMyUsersStore = defineStore({
         this.canDoActions = false;
         dashboardStore.startLoading();
         const user = dashboardStore.users.find((user) => user.id == userId);
-        if (user.pdf_file.length < 1) {
-          await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
-            method: "POST",
-            body: {
-              user_id: userId,
-            },
-            headers: homeStore.headers,
-          });
-        }
+        await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
+          method: "POST",
+          body: {
+            user_id: userId,
+          },
+          headers: homeStore.headers,
+        });
         const response: any = await $fetch(
           `${homeStore.baseUrl}/api/pdf/send/email`,
           {
@@ -409,7 +407,7 @@ export const useMyUsersStore = defineStore({
       try {
         const user = dashboardStore.users.find((u) => u.id == userData.id);
         let pdfUrl = "";
-        if (user.pdf_file.length < 1) {
+        if (!user.pdf_file[0]) {
           const pdfRes: any = await $fetch(
             `${homeStore.baseUrl}/api/pdf/generate`,
             {
@@ -444,6 +442,7 @@ export const useMyUsersStore = defineStore({
         dashboardStore.endLoading();
         runToast("Pdf downloaded");
       } catch (error: any) {
+        dashboardStore.errorLoading()
         homeStore.handleError(error);
         runErrorToast({
           title: "Downloading error",
@@ -463,15 +462,13 @@ export const useMyUsersStore = defineStore({
         dashboardStore.startLoading();
         const user = dashboardStore.users.find((user) => user.id == userId);
 
-        if (user.pdf_file.length <= 1) {
-          await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
-            method: "POST",
-            body: {
-              user_id: userId,
-            },
-            headers: homeStore.headers,
-          });
-        }
+        await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
+          method: "POST",
+          body: {
+            user_id: userId,
+          },
+          headers: homeStore.headers,
+        });
         const response: any = await $fetch(
           `${homeStore.baseUrl}/api/pdf/send/whatsapp`,
           {
