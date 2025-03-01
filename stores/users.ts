@@ -98,9 +98,9 @@ export const useMyUsersStore = defineStore({
         data.append("last_name", this.inputs.last_name.value);
         data.append(
           "phone_number",
-          this.inputs.phone_number.value +
+          this.inputs.country_code.value.toString() +
             " " +
-            this.inputs.country_code.value.toString()
+            this.inputs.phone_number.value
         );
         data.append("email", this.inputs.email.value);
         data.append("company_name", this.inputs.company_name.value);
@@ -399,7 +399,7 @@ export const useMyUsersStore = defineStore({
         this.canDoActions = true;
       }
     },
-    async downloadPdf(user: any) {
+    async downloadPdf(userData: any) {
       const homeStore = useMyHomeStore();
       const dashboardStore = useMyDashboardStore();
       const { runToast, runErrorToast } = useShadcnHelpers();
@@ -407,7 +407,7 @@ export const useMyUsersStore = defineStore({
       dashboardStore.startLoading();
       this.canDoActions = false;
       try {
-        const user = dashboardStore.users.find((user) => user.id == user.id);
+        const user = dashboardStore.users.find((u) => u.id == userData.id);
         let pdfUrl = "";
         if (user.pdf_file.length < 1) {
           const pdfRes: any = await $fetch(

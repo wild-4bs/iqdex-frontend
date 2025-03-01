@@ -1,10 +1,9 @@
-import Cookies from "universal-cookie";
-export default defineNuxtRouteMiddleware(async (to, from) => {
-  const cookies = new Cookies();
-  const token = cookies.get("auth_token");
-  if (to.fullPath.includes("/dashboard") && !token) {
+export default defineNuxtRouteMiddleware((to, from) => {
+  const token = useCookie("auth_token");
+
+  if (to.fullPath.includes("/dashboard") && !token.value) {
     return navigateTo("/login");
-  } else if (token && token.length < 10 && to.fullPath.includes("/dashboard")) {
-    return navigateTo("/");
+  } else if (token && to.fullPath == "/login") {
+    return navigateTo("/dashboard");
   }
 });

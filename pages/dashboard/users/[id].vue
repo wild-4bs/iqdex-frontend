@@ -1,7 +1,7 @@
 <template>
   <div class="user">
-    <div class="userExist flex gap-4 p-8" v-if="JSON.stringify(user) != '{}'">
-      <div class="image w-full lg:w-[600px] ">
+    <div class="userExist flex flex-col xl:flex-row gap-4 p-8" v-if="JSON.stringify(user) != '{}'">
+      <div class="image w-full xl:w-[600px] ">
         <img :src="user.image[0].url" alt="" class="rounded-lg w-full">
       </div>
       <div class="content">
@@ -50,6 +50,7 @@ import stringify from 'json-stringify-safe';
 const route = useRoute()
 const router = useRouter()
 const user = ref({})
+const homeStore = useMyHomeStore()
 const canSend = ref(false)
 const buttonContent = ref('Update')
 
@@ -73,16 +74,13 @@ watch(() => user.value, (newVal, oldVal) => {
 }, { deep: true })
 
 onMounted(async () => {
-  const homeStore = useMyHomeStore()
   const dashboardStore = useMyDashboardStore()
   const { runErrorToast } = useShadcnHelpers()
   try {
     dashboardStore.startLoading()
     const id = route.params.id
     const response = await $fetch(`${homeStore.baseUrl}/api/user/${id}`, {
-      method: "GET", headers: {
-        "Authorization": `Bearer ${localStorage.token}`
-      }
+      method: "GET", headers: homeStore.headers
     })
     user.value = response.user
     dashboardStore.endLoading()
@@ -114,6 +112,7 @@ const submit = async () => {
     const response = await $fetch(`${homeStore.baseUrl}/api/user/${id}`, {
       method: "patch",
       body: { newData: JSON.parse(userData) },
+      headers: homeStore.headers
     });
 
     await dashboardStore.getUsers();
@@ -144,6 +143,12 @@ definePageMeta({
 <style scoped lang="scss">
 .user {
   .content {
+    .userExist{
+      @media (max-width: 1080px) {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
     form {
       input {
         padding: 5px 10px;
