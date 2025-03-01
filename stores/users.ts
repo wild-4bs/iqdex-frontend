@@ -444,7 +444,6 @@ export const useMyUsersStore = defineStore({
         runToast("Pdf downloaded");
       } catch (error: any) {
         dashboardStore.errorLoading();
-        homeStore.handleError(error);
         runErrorToast({
           title: "Downloading error",
           message: error,
