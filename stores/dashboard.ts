@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import Cookies from "universal-cookie";
 
 type usersResponse = {
   ok: boolean;
@@ -23,6 +24,7 @@ export const useMyDashboardStore = defineStore({
     async getUsers() {
       const homeStore = useMyHomeStore();
       const { runErrorToast } = useShadcnHelpers();
+      const cookies = new Cookies()
       try {
         const response = await $fetch<usersResponse>(
           `${homeStore.baseUrl}/api/user`,
