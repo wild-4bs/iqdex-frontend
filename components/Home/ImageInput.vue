@@ -90,7 +90,7 @@ const imageRequirements = ref([
     content: "File Type: JPG, PNG",
   },
   {
-    content: "File Size: 3MB - 5MB",
+    content: "File Size: 3MB - 10MB",
   },
 ]);
 
@@ -103,10 +103,10 @@ const imageInputContent = ref("Drag and drop files here");
 const handleFileChange = (files) => {
   const file = files[0];
   const { runErrorToast } = useShadcnHelpers();
-  const maxSize = 25 * 1024 ** 2; // 25MB
+  const maxSize = 10 * 1024 ** 2; // 25MB
   if (file.size > maxSize) {
     runErrorToast({
-      title: "Image Error",
+      title: "Image Size Error",
       message:
         "Image size is not supported yet, please try to set the image size at the maximum of 5mb type.",
     });

@@ -162,6 +162,26 @@ onMounted(async () => {
 });
 
 const sendBadge = async () => {
+  const fields = ["companyName", "position", "firstName", "lastName"];
+  let hasError = false;
+
+  fields.forEach((field) => {
+    const value = inputsStore[field].value.trim();
+    if (!/^[A-Za-z\s]+$/.test(value)) {
+      // يسمح فقط بالأحرف الإنجليزية والمسافات
+      inputsStore[field].error = true;
+      hasError = true;
+
+      runErrorToast({
+        title: "Typing Error",
+        message: `You can only use English letters in ${field}. Please remove any non-English characters.`,
+      });
+    } else {
+      inputsStore[field].error = false;
+    }
+  });
+  if (hasError) return;
+
   const inputs = [
     "firstName",
     "lastName",

@@ -1,7 +1,7 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
 
 export const useMyInputsStore = defineStore({
-  id: 'myInputsStore',
+  id: "myInputsStore",
   state: () => ({
     firstName: {
       value: "",
@@ -39,5 +39,5 @@ export const useMyInputsStore = defineStore({
     sendVia: "",
     countries: [],
   }),
-  actions: {}
-})
+  actions: {},
+});
