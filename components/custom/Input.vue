@@ -52,27 +52,21 @@ const props = defineProps({
 });
 
 watch(
-  () => inputsStore.phoneNumber.value,
+  () => inputsStore.firstName.value,
   (newVal) => {
-    const cleanned = newVal.replace(/\D/g, "").replace(/^0/, "");
-    inputsStore.phoneNumber.value = cleanned;
+    const cleanned = newVal.replace(/[^\p{L}]/gu, ""); // السماح بجميع الأحرف من أي لغة وحذف الرموز غير الصالحة
+    inputsStore.firstName.value = cleanned;
   }
 );
 
 watch(
-  () => inputsStore.firstName.value,
-  (newVal) => {
-    const cleanned = newVal.replace(/[^a-zA-Z_-]/g, "");
-    inputsStore.firstName.value = cleanned;
-  }
-);
-watch(
   () => inputsStore.lastName.value,
   (newVal) => {
-    const cleanned = newVal.replace(/[^a-zA-Z_-]/g, "");
+    const cleanned = newVal.replace(/[^\p{L}]/gu, ""); // السماح بجميع الأحرف من أي لغة وحذف الرموز غير الصالحة
     inputsStore.lastName.value = cleanned;
   }
 );
+
 watch(
   () => inputsStore.email.value,
   (newVal) => {
