@@ -365,6 +365,14 @@ export const useMyUsersStore = defineStore({
       const { runToast, runErrorToast } = useShadcnHelpers();
       try {
         if (!this.canDoActions) return;
+        const user = dashboardStore.users.find((u) => u.id == userId);
+        if (user.status != "accepted") {
+          runErrorToast({
+            title: "Validation Error",
+            message: "The user have to bee accepted for this action.",
+          });
+          return;
+        }
         this.canDoActions = false;
         dashboardStore.startLoading();
         await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
@@ -453,6 +461,14 @@ export const useMyUsersStore = defineStore({
       const { runToast, runErrorToast } = useShadcnHelpers();
       try {
         if (!this.canDoActions) return;
+        const user = dashboardStore.users.find((u) => u.id == userId);
+        if (user.status != "accepted") {
+          runErrorToast({
+            title: "Validation Error",
+            message: "The user have to bee accepted for this action.",
+          });
+          return;
+        }
         this.canDoActions = false;
         dashboardStore.startLoading();
         await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
