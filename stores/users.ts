@@ -367,7 +367,6 @@ export const useMyUsersStore = defineStore({
         if (!this.canDoActions) return;
         this.canDoActions = false;
         dashboardStore.startLoading();
-        const user = dashboardStore.users.find((user) => user.id == userId);
         await $fetch(`${homeStore.baseUrl}/api/pdf/generate`, {
           method: "POST",
           body: {
@@ -408,21 +407,17 @@ export const useMyUsersStore = defineStore({
       try {
         const user = dashboardStore.users.find((u) => u.id == userData.id);
         let pdfUrl = "";
-        if (!user.pdf_file[0]) {
-          const pdfRes: any = await $fetch(
-            `${homeStore.baseUrl}/api/pdf/generate`,
-            {
-              method: "POST",
-              body: {
-                user_id: user.id,
-              },
-              headers: homeStore.headers,
-            }
-          );
-          pdfUrl = pdfRes.savedFile.url;
-        } else {
-          pdfUrl = user.pdf_file[0].url;
-        }
+        const pdfRes: any = await $fetch(
+          `${homeStore.baseUrl}/api/pdf/generate`,
+          {
+            method: "POST",
+            body: {
+              user_id: user.id,
+            },
+            headers: homeStore.headers,
+          }
+        );
+        pdfUrl = pdfRes.savedFile.url;
         const response = await axios.get(pdfUrl, {
           responseType: "arraybuffer",
         });
