@@ -162,26 +162,6 @@ onMounted(async () => {
 });
 
 const sendBadge = async () => {
-  const fields = ["companyName", "position", "firstName", "lastName"];
-  let hasError = false;
-
-  fields.forEach((field) => {
-    const value = inputsStore[field].value.trim();
-    if (!/^[A-Za-z\s]+$/.test(value)) {
-      // يسمح فقط بالأحرف الإنجليزية والمسافات
-      inputsStore[field].error = true;
-      hasError = true;
-
-      runErrorToast({
-        title: "Typing Error",
-        message: `You can only use English letters in ${field}. Please remove any non-English characters.`,
-      });
-    } else {
-      inputsStore[field].error = false;
-    }
-  });
-  if (hasError) return;
-
   const inputs = [
     "firstName",
     "lastName",
@@ -256,6 +236,28 @@ const sendBadge = async () => {
   if (!canSend.value) {
     return;
   }
+  const fields = ["position", "firstName", "lastName"];
+  if (inputsStore.participationType != "exhibitor") {
+    fields.push("companyName");
+  }
+  let hasError = false;
+
+  fields.forEach((field) => {
+    const value = inputsStore[field].value.trim();
+    if (!/^[A-Za-z\s]+$/.test(value)) {
+      // يسمح فقط بالأحرف الإنجليزية والمسافات
+      inputsStore[field].error = true;
+      hasError = true;
+
+      runErrorToast({
+        title: "Typing Error",
+        message: `You can only use English letters in ${field}. Please remove any non-English characters.`,
+      });
+    } else {
+      inputsStore[field].error = false;
+    }
+  });
+  if (hasError) return;
   const idd =
     countriesStore.currentCountry.idd.root +
     countriesStore.currentCountry.idd.suffixes[0];
@@ -275,7 +277,6 @@ const sendBadge = async () => {
   formData.append("send_via", inputsStore.sendVia);
   formData.append("image", inputsStore.image.value);
   if (inputsStore.participationType == "exhibitor") {
-    console.log(companiesStore.selectedCompany);
     formData.append("company_name", companiesStore.selectedCompany.name);
     formData.append("company_id", companiesStore.selectedCompany.id);
   } else {

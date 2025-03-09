@@ -50,6 +50,13 @@ const props = defineProps({
     required: true,
   },
 });
+watch(
+  () => inputsStore.phoneNumber.value,
+  (newVal) => {
+    inputsStore.phoneNumber.value =
+      newVal?.replace(/\D/g, "").replace(/^0/, "") || "";
+  }
+);
 
 watch(
   () => inputsStore.firstName.value,
