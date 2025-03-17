@@ -258,9 +258,10 @@ const sendBadge = async () => {
     }
   });
   if (hasError) return;
+  console.log(countriesStore.selectedCountry + "this from register.");
   const idd =
-    countriesStore.currentCountry.idd.root +
-    countriesStore.currentCountry.idd.suffixes[0];
+    countriesStore.selectedCountry.idd.root +
+    countriesStore.selectedCountry.idd.suffixes[0];
 
   const formData = new FormData();
   formData.append("first_name", firstName);
@@ -270,7 +271,7 @@ const sendBadge = async () => {
     idd.toString() + " " + phoneNumber.toString()
   );
   formData.append("email", email);
-  formData.append("country", countriesStore.currentCountry.name.common);
+  formData.append("country", countriesStore.selectedCountry.name.common);
   formData.append("country_code", idd);
   formData.append("position", position);
   formData.append("participation_type", inputsStore.participationType);
