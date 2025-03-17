@@ -73,14 +73,6 @@ watch(
     inputsStore.lastName.value = cleanned;
   }
 );
-
-watch(
-  () => inputsStore.email.value,
-  (newVal) => {
-    const cleanned = newVal.replace(/[^a-zA-Z0-9._@]/g, "");
-    inputsStore.email.value = cleanned;
-  }
-);
 </script>
 
 <style scoped lang="scss">
