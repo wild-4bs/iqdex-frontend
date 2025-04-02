@@ -258,13 +258,10 @@ const sendBadge = async () => {
     }
   });
   if (hasError) return;
-  console.log(countriesStore.selected + "this from register.");
-  const selected = countriesStore.countries.find(
-    (c) => c.name.common == countriesStore.currentCountry
-  );
+  const selected = countriesStore.getSelectedCountry();
 
-  const idd =
-    selected.idd.root + selected.idd.suffixes[0];
+  const idd = selected.idd.root + selected.idd.suffixes[0];
+  console.log(idd);
 
   const formData = new FormData();
   formData.append("first_name", firstName);

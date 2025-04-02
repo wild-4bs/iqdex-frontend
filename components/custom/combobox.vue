@@ -60,7 +60,10 @@ const value = ref("");
                 (ev) => {
                   if (typeof ev.detail.value === 'string') {
                     countriesStore.currentCountry = ev.detail.value;
-                    console.log(ev.detail.value);
+                    const country = countriesStore.countries.find(
+                      (c) => c.name.common == ev.detail.value
+                    );
+                    countriesStore.setSelectedCountry(country);
                     usersStore.inputs.country.value = ev.detail.value;
                     value = ev.detail.value;
                   }
