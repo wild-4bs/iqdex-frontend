@@ -1,7 +1,7 @@
 <template>
   <aside class="flex flex-col gap-4">
     <div class="logo">
-      <img src="/dashboard/sidebar/malamihLogo.png" alt="">
+      <img src="/dashboard/sidebar/malamihLogo.png" alt="" />
     </div>
     <ul class="links flex flex-col gap-2">
       <li v-for="(link, i) in links" :key="i">
@@ -17,32 +17,33 @@
 </template>
 
 <script setup>
-
 const links = [
   {
     name: "Dashboard",
     icon: "ic:baseline-space-dashboard",
-    path: "/dashboard"
+    path: "/dashboard",
   },
   {
     name: "Settings",
     icon: "ic:outline-settings",
-    path: "/dashboard/settings"
+    path: "/dashboard/settings",
   },
   {
     name: "Companies",
     icon: "ic:outline-home-work",
-    path: "/dashboard/companies"
+    path: "/dashboard/companies",
   },
-]
-
+];
 </script>
 
 <style scoped lang="scss">
 aside {
   width: theme("sizes.sidebarWidth");
   border-right: 1px solid lightgray;
-
+  position: sticky;
+  left: 0;
+  top: 0;
+  height: 100dvh;
   .logo {
     padding: 1rem;
 
@@ -55,7 +56,7 @@ aside {
     li {
       a {
         padding: 10px 1rem;
-        transition: .2s;
+        transition: 0.2s;
 
         &.router-link-active {
           background-color: rgb(235, 235, 235);
