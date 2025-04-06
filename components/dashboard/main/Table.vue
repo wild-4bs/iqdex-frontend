@@ -1,8 +1,8 @@
 <script setup>
-const dashboardStore = useMyDashboardStore()
-const usersStore = useMyUsersStore()
-const { timeAgo } = useDateHelpers()
-const router = useRouter()
+const dashboardStore = useMyDashboardStore();
+const usersStore = useMyUsersStore();
+const { timeAgo } = useDateHelpers();
+const router = useRouter();
 </script>
 
 <template>
@@ -25,10 +25,20 @@ const router = useRouter()
       </TableRow>
     </TableHeader>
     <TableBody>
-      <TableRow v-for="user in dashboardStore.filteredUsers" class="cursor-pointer" :key="user.id">
-        <TableCell class="text-center" v-if="user.image[0]"><img :src="user.image[0].url" alt=""></TableCell>
-        <TableCell class="text-center">{{ user.first_name + ' ' + user.last_name }}</TableCell>
-        <TableCell class="text-center">{{ timeAgo(user.created_at) }}</TableCell>
+      <TableRow
+        v-for="user in dashboardStore.filteredUsers"
+        class="cursor-pointer"
+        :key="user.id"
+      >
+        <TableCell class="text-center" v-if="user.image[0]"
+          ><img :src="user.image[0].url" alt="" loading="lazy"
+        /></TableCell>
+        <TableCell class="text-center">{{
+          user.first_name + " " + user.last_name
+        }}</TableCell>
+        <TableCell class="text-center">{{
+          timeAgo(user.created_at)
+        }}</TableCell>
         <TableCell class="text-center">{{ user.participation_type }}</TableCell>
         <TableCell class="text-center">{{ user.position }}</TableCell>
         <TableCell class="text-center">{{ user.company_name }}</TableCell>
@@ -47,24 +57,61 @@ const router = useRouter()
                 <Icon name="ic:outline-more-horiz" />
               </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent :class="`${!usersStore.canDoActions ? 'bg-gray-100' : ''}`">
-              <DropdownMenuItem v-if="user.status != 'rejected'" @click="usersStore.rejectUser(user.id)"
-                :class="`${!usersStore.canDoActions ? 'cursor-not-allowed' : ''}`">Reject
+            <DropdownMenuContent
+              :class="`${!usersStore.canDoActions ? 'bg-gray-100' : ''}`"
+            >
+              <DropdownMenuItem
+                v-if="user.status != 'rejected'"
+                @click="usersStore.rejectUser(user.id)"
+                :class="`${
+                  !usersStore.canDoActions ? 'cursor-not-allowed' : ''
+                }`"
+                >Reject
               </DropdownMenuItem>
-              <DropdownMenuItem v-if="user.status != 'accepted'" @click="usersStore.acceptUser(user.id)"
-                :class="`${!usersStore.canDoActions ? 'cursor-not-allowed' : ''}`">Accept
+              <DropdownMenuItem
+                v-if="user.status != 'accepted'"
+                @click="usersStore.acceptUser(user.id)"
+                :class="`${
+                  !usersStore.canDoActions ? 'cursor-not-allowed' : ''
+                }`"
+                >Accept
               </DropdownMenuItem>
-              <DropdownMenuItem @click="usersStore.sendPdfByWhatsapp(user.id)"
-                :class="`${!usersStore.canDoActions ? 'cursor-not-allowed' : ''}`">
-                Send Whatsapp</DropdownMenuItem>
-              <DropdownMenuItem @click="usersStore.sendPdfByEmail(user.id)"
-                :class="`${!usersStore.canDoActions ? 'cursor-not-allowed' : ''}`">Send Email</DropdownMenuItem>
-              <DropdownMenuItem @click="usersStore.downloadPdf(user)"
-                :class="`${!usersStore.canDoActions ? 'cursor-not-allowed' : ''}`">Download Badge</DropdownMenuItem>
-              <DropdownMenuItem @click="router.push(`/dashboard/users/${user.id}`)"
-                :class="`${!usersStore.canDoActions ? 'cursor-not-allowed' : ''}`">Edit</DropdownMenuItem>
-              <DropdownMenuItem @click="usersStore.DeleteUser(user.id)"
-                :class="`${!usersStore.canDoActions ? 'cursor-not-allowed' : ''}`">Delete User</DropdownMenuItem>
+              <DropdownMenuItem
+                @click="usersStore.sendPdfByWhatsapp(user.id)"
+                :class="`${
+                  !usersStore.canDoActions ? 'cursor-not-allowed' : ''
+                }`"
+              >
+                Send Whatsapp</DropdownMenuItem
+              >
+              <DropdownMenuItem
+                @click="usersStore.sendPdfByEmail(user.id)"
+                :class="`${
+                  !usersStore.canDoActions ? 'cursor-not-allowed' : ''
+                }`"
+                >Send Email</DropdownMenuItem
+              >
+              <DropdownMenuItem
+                @click="usersStore.downloadPdf(user)"
+                :class="`${
+                  !usersStore.canDoActions ? 'cursor-not-allowed' : ''
+                }`"
+                >Download Badge</DropdownMenuItem
+              >
+              <DropdownMenuItem
+                @click="router.push(`/dashboard/users/${user.id}`)"
+                :class="`${
+                  !usersStore.canDoActions ? 'cursor-not-allowed' : ''
+                }`"
+                >Edit</DropdownMenuItem
+              >
+              <DropdownMenuItem
+                @click="usersStore.DeleteUser(user.id)"
+                :class="`${
+                  !usersStore.canDoActions ? 'cursor-not-allowed' : ''
+                }`"
+                >Delete User</DropdownMenuItem
+              >
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>
@@ -85,7 +132,7 @@ img {
 .status {
   span {
     text-transform: capitalize;
-    font-size: .85rem;
+    font-size: 0.85rem;
   }
 
   .circle {
@@ -101,7 +148,7 @@ img {
   &.pending {
     .circle {
       color: white;
-      background-color: #F7CB73;
+      background-color: #f7cb73;
     }
   }
 
@@ -115,7 +162,7 @@ img {
   &.accepted {
     .circle {
       color: white;
-      background-color: #12BF0C;
+      background-color: #12bf0c;
     }
   }
 }
@@ -127,7 +174,7 @@ img {
     height: 30px;
     border-radius: 50%;
     font-size: 20px;
-    transition: .2s;
+    transition: 0.2s;
 
     &:hover {
       background-color: rgb(218, 218, 218);

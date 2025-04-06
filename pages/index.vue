@@ -122,7 +122,7 @@
 
 <script setup>
 const inputsStore = useMyInputsStore();
-const defaultValue = ref([]);
+const defaultValue = ref({});
 const companyError = ref(false);
 const countries = ref([]);
 const countriesStore = useMyCountriesStore();
@@ -144,12 +144,14 @@ onMounted(async () => {
   );
   homeStore.expired = response.badge_expired;
   navigateTo("/expired");
-  await countriesStore.getDefaultCountry();
   await companiesStore.getCompanies();
-  defaultValue.value = {
-    flag: countriesStore.defaultCountry.flags.png,
-    name: countriesStore.defaultCountry.name.common,
-  };
+  await countriesStore.getDefaultCountry();
+  if (JSON.stringify(countriesStore.defaultCountry) != "{}") {
+    defaultValue.value = {
+      flag: countriesStore.defaultCountry.flags.png,
+      name: countriesStore.defaultCountry.name.common,
+    };
+  }
   await countriesStore.getCountries();
   countries.value = countriesStore.countries.map(({ name, flags }) => {
     const transformedCountry = {

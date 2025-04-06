@@ -24,8 +24,8 @@ export const useMyDashboardStore = defineStore({
     async getUsers() {
       const homeStore = useMyHomeStore();
       const { runErrorToast } = useShadcnHelpers();
-      const cookies = new Cookies()
       try {
+        this.startLoading();
         const response = await $fetch<usersResponse>(
           `${homeStore.baseUrl}/api/user`,
           {
@@ -34,10 +34,16 @@ export const useMyDashboardStore = defineStore({
           }
         );
         if (response.ok) {
+          this.endLoading();
           this.users = response.users;
-          this.filteredUsers = response.users;
+          this.filteredUsers = response.users.sort(
+            (a: any, b: any) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          );
         }
       } catch (error: any) {
+        this.errorLoading();
         homeStore.handleError(error);
         runErrorToast({
           title: "Error while fetching users.",
