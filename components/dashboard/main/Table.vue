@@ -26,7 +26,7 @@ const router = useRouter();
     </TableHeader>
     <TableBody>
       <TableRow
-        v-for="user in dashboardStore.filteredUsers"
+        v-for="user in dashboardStore.users"
         class="cursor-pointer"
         :key="user.id"
       >

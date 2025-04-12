@@ -5,50 +5,66 @@ type usersResponse = {
   ok: boolean;
   message: string;
   users: any;
+  count: number;
 };
 
 export const useMyDashboardStore = defineStore({
   id: "myDashboardStore",
   state: () => ({
     users: [] as any[],
+    page: 1,
     cases: [] as any[],
-    filteredUsers: [] as any,
+    usersCount: 0,
+    search: "",
     loading: {
       error: false,
       progress: 0,
       show: false,
     },
+    canGetUsers: true,
     companies: [],
   }),
   actions: {
     async getUsers() {
       const homeStore = useMyHomeStore();
       const { runErrorToast } = useShadcnHelpers();
+      console.log(this.page);
       try {
+        // 1. تحقق من الإمكانية قبل البدء
+        if (!this.canGetUsers) return;
+
+        // 2. إعداد حالة التحميل
         this.startLoading();
+        this.canGetUsers = false;
+
+        // 3. تنفيذ الطلب
         const response = await $fetch<usersResponse>(
-          `${homeStore.baseUrl}/api/user`,
+          `${homeStore.baseUrl}/api/user?page=${this.page}&search=${this.search}`,
           {
             method: "GET",
             headers: homeStore.headers,
           }
         );
-        if (response.ok) {
-          this.endLoading();
-          this.users = response.users;
-          this.filteredUsers = response.users.sort(
-            (a: any, b: any) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          );
-        }
+
+        this.usersCount = response.count;
+        this.users = response.users;
+        this.endLoading();
       } catch (error: any) {
+        // 6. معالجة الأخطاء
         this.errorLoading();
-        homeStore.handleError(error);
+
+        if (error.statusCode === 401) {
+          useCookie("auth_token").value = null;
+          return navigateTo("/login");
+        }
+
         runErrorToast({
           title: "Error while fetching users.",
-          message: error.statusMessage,
+          message: error.data?.message || "Unknown error",
         });
+      } finally {
+        // 7. إعادة تعيين الإمكانية
+        this.canGetUsers = true;
       }
     },
     startLoading() {

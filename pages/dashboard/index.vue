@@ -3,7 +3,12 @@
     <DashboardMainAddUser v-if="usersStore.addUser" />
     <div class="helpers flex items-center justify-between">
       <div class="search">
-        <input type="text" @input="search" v-model="searchInput" placeholder="Search By Email">
+        <input
+          type="text"
+          @input="search"
+          v-model="dashboardStore.search"
+          placeholder="Search By Email"
+        />
       </div>
       <div class="options flex items-center justify-center">
         <DropdownMenu class="icon flex items-center justify-center">
@@ -13,10 +18,18 @@
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem @click="usersStore.rejectAllUsers()">Reject all</DropdownMenuItem>
-            <DropdownMenuItem @click="usersStore.acceptAllUser()">Accept all</DropdownMenuItem>
-            <DropdownMenuItem @click="usersStore.exportAsPdf()">Export all as pdf</DropdownMenuItem>
-            <DropdownMenuItem @click="usersStore.exportAsExcel()">Export all as Excel</DropdownMenuItem>
+            <DropdownMenuItem @click="usersStore.rejectAllUsers()"
+              >Reject all</DropdownMenuItem
+            >
+            <DropdownMenuItem @click="usersStore.acceptAllUser()"
+              >Accept all</DropdownMenuItem
+            >
+            <DropdownMenuItem @click="usersStore.exportAsPdf()"
+              >Export all as pdf</DropdownMenuItem
+            >
+            <DropdownMenuItem @click="usersStore.exportAsExcel()"
+              >Export all as Excel</DropdownMenuItem
+            >
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -26,7 +39,10 @@
         <div class="addUsers" @click="usersStore.addUser = true">
           <Button variant="outline">Add user</Button>
         </div>
-        <span>All users: <span class="count">{{ dashboardStore.users.length }}</span></span>
+        <span
+          >All users:
+          <span class="count">{{ dashboardStore.usersCount }}</span></span
+        >
       </div>
       <div class="options">
         <div class="status">
@@ -34,29 +50,56 @@
         </div>
       </div>
     </header>
-    <div class="dataTable">
+    <div class="dataTable" ref="usersTable">
       <DashboardMainTable />
+      <Pagination
+        v-slot="{ page }"
+        :items-per-page="50"
+        :total="dashboardStore.usersCount"
+        :sibling-count="7"
+        show-edges
+        :default-page="dashboardStore.page"
+        class="w-full"
+        v-model:page="dashboardStore.page"
+      >
+        <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+          <PaginationFirst />
+          <PaginationPrev />
+
+          <template v-for="(item, index) in items">
+            <PaginationListItem
+              v-if="item.type === 'page'"
+              :key="index"
+              :value="item.value"
+              as-child
+            >
+              <Button
+                class="w-10 h-10 p-0"
+                :variant="item.value === page ? 'default' : 'outline'"
+              >
+                {{ item.value }}
+              </Button>
+            </PaginationListItem>
+            <PaginationEllipsis v-else :key="item.type" :index="index" />
+          </template>
+
+          <PaginationNext />
+          <PaginationLast />
+        </PaginationList>
+      </Pagination>
     </div>
   </div>
 </template>
 
 <script setup>
+const dashboardStore = useMyDashboardStore();
+const usersStore = useMyUsersStore();
+const usersTable = ref("");
 
-const dashboardStore = useMyDashboardStore()
-const usersStore = useMyUsersStore()
-
-const cases = ref([])
-const searchInput = ref('')
-const search = () => {
-  const regex = new RegExp(searchInput.value.split(/\s+/).join("|"), "i");
-
-  dashboardStore.filteredUsers = dashboardStore.users.filter(user =>
-    regex.test(user.email)
-  );
-}
+const cases = ref([]);
 
 onMounted(async () => {
-  await dashboardStore.getUsers()
+  await dashboardStore.getUsers();
 
   if (!localStorage.cases) {
     cases.value = [
@@ -75,15 +118,29 @@ onMounted(async () => {
         color: "#f60303a6",
         active: true,
       },
-    ]
-    localStorage.setItem("cases", JSON.stringify(cases.value))
+    ];
+    localStorage.setItem("cases", JSON.stringify(cases.value));
   } else if (localStorage.cases) {
-    cases.value = JSON.parse(localStorage.cases)
+    cases.value = JSON.parse(localStorage.cases);
   }
-})
+});
+
+const search = () => {
+  dashboardStore.getUsers();
+};
+
+watch(
+  () => dashboardStore.page,
+  (newVal, oldVal) => {
+    if (dashboardStore.canGetUsers) {
+      dashboardStore.getUsers();
+    }
+  }
+);
+
 definePageMeta({
-  layout: "dashboard"
-})
+  layout: "dashboard",
+});
 </script>
 
 <style scoped lang="scss">
@@ -116,7 +173,7 @@ definePageMeta({
         font-size: 20px;
         border: 1px solid transparent;
         border-radius: 50%;
-        transition: .2s;
+        transition: 0.2s;
 
         &:hover {
           border-color: lightgray;
@@ -126,7 +183,7 @@ definePageMeta({
   }
 
   header {
-    padding: .2rem 1rem 1rem 0;
+    padding: 0.2rem 1rem 1rem 0;
 
     .users-count {
       .count {
@@ -142,7 +199,7 @@ definePageMeta({
 
       .option {
         text-transform: capitalize;
-        transition: .2s;
+        transition: 0.2s;
         user-select: none;
         cursor: pointer;
 
