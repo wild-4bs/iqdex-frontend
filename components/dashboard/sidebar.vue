@@ -19,8 +19,8 @@
 <script setup>
 const links = [
   {
-    name: "Dashboard",
-    icon: "ic:baseline-space-dashboard",
+    name: "Users",
+    icon: "ic:outline-supervisor-account",
     path: "/dashboard",
   },
   {

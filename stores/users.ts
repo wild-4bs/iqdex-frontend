@@ -4,12 +4,28 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import axios from "axios";
-
 export const useMyUsersStore = defineStore({
   id: "myUsersStore",
   state: () => ({
     canDoActions: true,
     addUser: false,
+    excelUsersCount: 1,
+    excelExportedUsers: 0,
+    excelCancel: false,
+    excelTotalPages: 1,
+    excelButtonContent: "Export",
+    excelTitleContent: "Users Exporter",
+    excelRequestPage: 1,
+    excelExporting: false,
+
+    pdfUsersCount: 1,
+    pdfExportedUsers: 0,
+    pdfCancel: false,
+    pdfTotalPages: 1,
+    pdfButtonContent: "Export",
+    pdfTitleContent: "Users Exporter",
+    pdfRequestPage: 1,
+    pdfExporting: false,
     inputs: {
       first_name: {
         value: "",
@@ -61,6 +77,23 @@ export const useMyUsersStore = defineStore({
     },
   }),
   actions: {
+    async fetchUsers(url: string) {
+      const homeStore = useMyHomeStore();
+      const { runErrorToast } = useShadcnHelpers();
+
+      try {
+        const response: any = await $fetch(url, {
+          method: "GET",
+          headers: homeStore.headers,
+        });
+        return response;
+      } catch (error: any) {
+        runErrorToast({
+          title: "Error while exporting users.",
+          message: error.statusMessage,
+        });
+      }
+    },
     async createUser() {
       const dashboardStore = useMyDashboardStore();
       const homeStore = useMyHomeStore();
@@ -301,63 +334,88 @@ export const useMyUsersStore = defineStore({
         this.canDoActions = true;
       }
     },
-    exportAsExcel() {
-      const dashboardStore = useMyDashboardStore();
-      const transformedUsers: any[] = [];
-      dashboardStore.users.forEach((user: any) => {
-        const userTransformer = {
-          name: user.first_name + " " + user.last_name,
-          phoneNumber: user.phone_number,
-          email: user.email,
-          company_name: user.company_name,
-          country: user.country,
-          position: user.position,
-          status: user.status,
-          participation_type: user.participation_type,
-          send_via: user.send_via,
-        };
-        transformedUsers.push(userTransformer);
-      });
-      const worksheet = XLSX.utils.json_to_sheet(transformedUsers);
-
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
-
-      XLSX.writeFile(workbook, "users.xlsx");
+    async exportAsExcel() {
+      const homeStore = useMyHomeStore();
+      const { runToast, runErrorToast } = useShadcnHelpers();
+      let users = [] as any;
+      if (!this.canDoActions) return;
+      this.excelCancel = false;
+      this.canDoActions = false;
+      this.excelButtonContent = "Cancel";
+      this.excelTitleContent = "Exporting users...";
+      try {
+        for (let i = 1; i <= this.excelTotalPages; i++) {
+          if (this.excelCancel) return;
+          this.excelExporting = true;
+          const response = await this.fetchUsers(
+            `${homeStore.baseUrl}/api/user?page=${this.excelRequestPage}&limit=150`
+          );
+          this.excelUsersCount = response.count;
+          this.excelRequestPage++;
+          this.excelTotalPages = response.totalPages;
+          users.push(...response.users);
+          this.excelExportedUsers = users.length;
+        }
+        runToast("users have been fetched");
+        this.excelExporter(users);
+      } catch (error: any) {
+        runErrorToast({
+          title: "Error while extracting users",
+          message: error.statusMessage,
+        });
+      } finally {
+        this.canDoActions = true;
+        this.excelButtonContent = "Export";
+        this.excelExportedUsers = 0;
+        this.excelTitleContent = "Users Exporter";
+        this.excelTotalPages = 1;
+        this.excelUsersCount = 1;
+        this.excelRequestPage = 1;
+        this.excelExporting = false;
+      }
     },
-    exportAsPdf() {
-      const dashboardStore = useMyDashboardStore();
-      const transformedUsers: any[] = [];
-      dashboardStore.users.forEach((user: any) => {
-        const userTransformer = {
-          name: user.first_name + " " + user.last_name,
-          "phone number": user.phone_number,
-          email: user.email,
-          "company name": user.company_name,
-          country: user.country,
-          position: user.position,
-          status: user.status,
-          "participation type": user.participation_type,
-        };
-        transformedUsers.push(userTransformer);
-      });
+    async exportAsPdf() {
+      const homeStore = useMyHomeStore();
+      const { runToast, runErrorToast } = useShadcnHelpers();
+      let users = [] as any;
 
-      const doc = new jsPDF();
+      if (!this.canDoActions) return;
+      this.pdfCancel = false;
+      this.canDoActions = false;
+      this.pdfButtonContent = "Cancel";
+      this.pdfTitleContent = "Exporting Users...";
+      try {
+        for (let i = 1; i <= this.pdfTotalPages; i++) {
+          if (this.pdfCancel) return;
 
-      const columns = Object.keys(transformedUsers[0]);
-      const rows = transformedUsers.map((user) =>
-        columns.map((col) => user[col])
-      );
-
-      doc.text("Users Report", 14, 10);
-
-      autoTable(doc, {
-        head: [columns],
-        body: rows,
-        startY: 20,
-      });
-
-      doc.save("users.pdf");
+          this.pdfExporting = true;
+          const response = await this.fetchUsers(
+            `${homeStore.baseUrl}/api/user?page=${this.pdfRequestPage}&limit=150`
+          );
+          this.pdfUsersCount = response.count;
+          this.pdfRequestPage++;
+          this.pdfTotalPages = response.totalPages;
+          users.push(...response.users);
+          this.pdfExportedUsers = users.length;
+        }
+        runToast("Users have been fetched");
+        this.pdfExporter(users);
+      } catch (error: any) {
+        console.log(error);
+        runErrorToast({
+          title: "Error while extracting users",
+          message: error.statusMessage,
+        });
+      } finally {
+        this.canDoActions = true;
+        this.pdfButtonContent = "Export";
+        this.pdfExportedUsers = 0;
+        this.pdfTitleContent = "Users Exporter";
+        this.pdfTotalPages = 1;
+        this.pdfUsersCount = 1;
+        this.pdfRequestPage = 1;
+        this.pdfExporting = false;
+      }
     },
     async sendPdfByEmail(userId: any) {
       const homeStore = useMyHomeStore();
@@ -502,6 +560,136 @@ export const useMyUsersStore = defineStore({
       } finally {
         this.canDoActions = true;
       }
+    },
+    excelExporter(users: []) {
+      const transformedUsers = [] as any;
+      users.forEach((user: any) => {
+        const userTransformer = {
+          name: user.first_name + " " + user.last_name,
+          phoneNumber: user.phone_number,
+          email: user.email,
+          company_name: user.company_name,
+          country: user.country,
+          position: user.position,
+          status: user.status,
+          participation_type: user.participation_type,
+          send_via: user.send_via,
+        };
+        transformedUsers.push(userTransformer);
+      });
+      const worksheet = XLSX.utils.json_to_sheet(transformedUsers);
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+
+      XLSX.writeFile(workbook, "users.xlsx");
+    },
+    // pdfExporter(users: []) {
+    //   const transformedUsers = [] as any;
+    //   users.forEach((user: any) => {
+    //     const userTransformer = {
+    //       name: user.first_name + " " + user.last_name,
+    //       "phone number": user.phone_number,
+    //       email: user.email,
+    //       "company name": user.company_name,
+    //       country: user.country,
+    //       position: user.position,
+    //       status: user.status,
+    //       "participation type": user.participation_type,
+    //     };
+    //     transformedUsers.push(userTransformer);
+    //   });
+
+    //   const doc = new jsPDF();
+    //   const columns = Object.keys(transformedUsers[0]);
+    //   const rows = transformedUsers.map((user: any) =>
+    //     columns.map((col) => user[col])
+    //   );
+
+    //   doc.text("Users Report", 14, 10);
+
+    //   autoTable(doc, {
+    //     head: [columns],
+    //     body: rows,
+    //     startY: 20,
+    //   });
+
+    //   doc.save("users.pdf");
+    // },
+    pdfExporter(users: []) {
+      // 1. التحقق من وجود بيانات
+      if (!users || users.length === 0) {
+        alert("No users to export!");
+        return;
+      }
+
+      // 2. تحويل البيانات مع التعامل مع القيم غير المعرّفة
+      const transformedUsers = users.map((user: any) => ({
+        name: `${user.first_name || ""} ${user.last_name || ""}`.trim(),
+        "phone number": user.phone_number || "N/A",
+        email: user.email || "N/A",
+        "company name": user.company_name || "N/A",
+        country: user.country || "N/A",
+        position: user.position || "N/A",
+        status: user.status || "N/A",
+        "participation type": user.participation_type || "N/A",
+      }));
+
+      // 3. إنشاء مستند PDF مع إعدادات مخصصة
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // 4. إعداد العناوين والجدول
+      const columns = Object.keys(transformedUsers[0]);
+      const rows = transformedUsers.map((user: any) =>
+        columns.map((col) => user[col])
+      );
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("Users Report", 14, 15);
+
+      // 5. استخدام autoTable بالطريقة الصحيحة
+      autoTable(doc, {
+        head: [columns.map((c) => c.toUpperCase())],
+        body: rows,
+        startY: 20,
+        margin: { horizontal: 5 },
+        styles: {
+          fontSize: 9,
+          cellPadding: 3,
+          overflow: "linebreak",
+          valign: "middle",
+          halign: "left",
+          textColor: [33, 37, 41],
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245],
+        },
+        columnStyles: {
+          // تأكد من تطابق الأسماء مع الأعمدة
+          "phone number": { cellWidth: 25 },
+          email: { cellWidth: 40 },
+          "company name": { cellWidth: 35 },
+          country: { cellWidth: 25 },
+          position: { cellWidth: 30 },
+        },
+        didDrawPage: (data) => {
+          doc.setFontSize(8);
+          doc.text(
+            `Page ${data.pageNumber}`,
+            doc.internal.pageSize.width - 15,
+            doc.internal.pageSize.height - 10,
+            { align: "right" }
+          );
+        },
+      });
+
+      // 6. حفظ الملف
+      doc.save("users-report.pdf");
     },
   },
 });

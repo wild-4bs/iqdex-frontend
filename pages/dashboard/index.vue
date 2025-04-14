@@ -1,5 +1,10 @@
 <template>
   <div class="dashboard">
+    <DashboardUserExporter
+      v-if="dashboardStore.excelUsersExporter"
+      role="excel"
+    />
+    <DashboardUserExporter v-if="dashboardStore.pdfUsersExporter" role="pdf" />
     <DashboardMainAddUser v-if="usersStore.addUser" />
     <div class="helpers flex items-center justify-between">
       <div class="search">
@@ -24,10 +29,10 @@
             <DropdownMenuItem @click="usersStore.acceptAllUser()"
               >Accept all</DropdownMenuItem
             >
-            <DropdownMenuItem @click="usersStore.exportAsPdf()"
+            <DropdownMenuItem @click="dashboardStore.pdfUsersExporter = true"
               >Export all as pdf</DropdownMenuItem
             >
-            <DropdownMenuItem @click="usersStore.exportAsExcel()"
+            <DropdownMenuItem @click="dashboardStore.excelUsersExporter = true"
               >Export all as Excel</DropdownMenuItem
             >
           </DropdownMenuContent>
@@ -50,7 +55,7 @@
         </div>
       </div>
     </header>
-    <div class="dataTable" ref="usersTable">
+    <div class="dataTable flex flex-col gap-4" ref="usersTable">
       <DashboardMainTable />
       <Pagination
         v-slot="{ page }"
@@ -62,7 +67,10 @@
         class="w-full"
         v-model:page="dashboardStore.page"
       >
-        <PaginationList v-slot="{ items }" class="flex items-center gap-1">
+        <PaginationList
+          v-slot="{ items }"
+          class="flex justify-center items-center gap-1"
+        >
           <PaginationFirst />
           <PaginationPrev />
 
@@ -126,6 +134,7 @@ onMounted(async () => {
 });
 
 const search = () => {
+  dashboardStore.page = 1;
   dashboardStore.getUsers();
 };
 

@@ -16,6 +16,9 @@ export const useMyDashboardStore = defineStore({
     cases: [] as any[],
     usersCount: 0,
     search: "",
+    excelUsersExporter: false,
+    pdfUsersExporter: false,
+    activeCasesString: "",
     loading: {
       error: false,
       progress: 0,
@@ -28,18 +31,14 @@ export const useMyDashboardStore = defineStore({
     async getUsers() {
       const homeStore = useMyHomeStore();
       const { runErrorToast } = useShadcnHelpers();
-      console.log(this.page);
       try {
-        // 1. تحقق من الإمكانية قبل البدء
         if (!this.canGetUsers) return;
-
-        // 2. إعداد حالة التحميل
+        console.log(this.activeCasesString);
         this.startLoading();
         this.canGetUsers = false;
 
-        // 3. تنفيذ الطلب
         const response = await $fetch<usersResponse>(
-          `${homeStore.baseUrl}/api/user?page=${this.page}&search=${this.search}`,
+          `${homeStore.baseUrl}/api/user?page=${this.page}&search=${this.search}&status=${this.activeCasesString}`,
           {
             method: "GET",
             headers: homeStore.headers,
@@ -50,7 +49,6 @@ export const useMyDashboardStore = defineStore({
         this.users = response.users;
         this.endLoading();
       } catch (error: any) {
-        // 6. معالجة الأخطاء
         this.errorLoading();
 
         if (error.statusCode === 401) {
@@ -63,7 +61,6 @@ export const useMyDashboardStore = defineStore({
           message: error.data?.message || "Unknown error",
         });
       } finally {
-        // 7. إعادة تعيين الإمكانية
         this.canGetUsers = true;
       }
     },
