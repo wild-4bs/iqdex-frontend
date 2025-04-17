@@ -61,6 +61,7 @@ const login = async () => {
     });
     const cookies = new Cookies();
     cookies.set("auth_token", response.token);
+    localStorage.setItem("auth_token", JSON.stringify(response.token));
     runToast(response.message);
     buttonContent.value = "Login";
     navigateTo("/dashboard");

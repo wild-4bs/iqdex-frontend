@@ -7,13 +7,15 @@
     v-if="props.linkTo != 'phoneNumber'"
   />
   <div class="phoneNumberInput flex gap-2" v-else>
-    <input
-      type="text"
-      readonly
-      class="w-[70px]"
-      :class="inputsStore[linkTo].error ? 'error' : ''"
-      :placeholder="countryIdd"
-    />
+    <div class="countryCode relative">
+      <input
+        type="text"
+        class="w-[70px]"
+        :class="inputsStore[linkTo].error ? 'error' : ''"
+        v-model="inputsStore.countryCode.value"
+        maxlength="5"
+      />
+    </div>
     <input
       type="text"
       :class="['w-full', inputsStore[linkTo].error ? 'error' : '']"
@@ -25,17 +27,17 @@
 
 <script setup>
 const inputsStore = useMyInputsStore();
-const countriesStore = useMyCountriesStore();
-const countryIdd = computed(() => {
-  if (countriesStore.selectedCountry.idd) {
-    const idd =
-      countriesStore.selectedCountry.idd.root +
-      countriesStore.selectedCountry.idd.suffixes[0];
-    return idd;
-  } else {
-    return "00";
-  }
-});
+// const countriesStore = useMyCountriesStore();
+// const countryIdd = computed(() => {
+//   if (countriesStore.selectedCountry.idd) {
+//     const idd =
+//       countriesStore.selectedCountry.idd.root +
+//       countriesStore.selectedCountry.idd.suffixes[0];
+//     return idd;
+//   } else {
+//     return "00";
+//   }
+// });
 const props = defineProps({
   type: {
     type: String,
@@ -55,6 +57,14 @@ watch(
   (newVal) => {
     inputsStore.phoneNumber.value =
       newVal?.replace(/\D/g, "").replace(/^0/, "") || "";
+  }
+);
+
+watch(
+  () => inputsStore.countryCode.value,
+  (newVal) => {
+    inputsStore.countryCode.value =
+      "+" + newVal?.replace(/\D/g, "").replace(/^0/, "") || "";
   }
 );
 

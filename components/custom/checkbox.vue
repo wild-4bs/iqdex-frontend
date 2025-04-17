@@ -1,7 +1,15 @@
 <template>
-  <label :for="props.value" :class="['input', props.error ? 'error' : '']"
-    @change="setValue(props.value, props.linkTo)">
-    <input type="radio" :id="props.value" :value="props.value" :name="props.group">
+  <label
+    :for="props.value"
+    :class="['input', props.error ? 'error' : '']"
+    @change="setValue(props.value, props.linkTo)"
+  >
+    <input
+      type="radio"
+      :id="props.value"
+      :value="props.value"
+      :name="props.group"
+    />
     <label :for="props.value">
       <div class="icon flex items-center justify-center">
         <Icon name="ic:baseline-check" />
@@ -14,47 +22,45 @@
 </template>
 
 <script setup>
-const inputsStore = useMyInputsStore()
+const inputsStore = useMyInputsStore();
 const props = defineProps({
   title: {
     type: String,
-    required: true
+    required: true,
   },
   linkTo: {
     type: String,
-    required: true
+    required: true,
   },
   group: {
     type: String,
-    required: true
+    required: true,
   },
   error: {
     type: Boolean,
-    required: true
+    required: true,
   },
   value: {
     type: String,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
-const companiesStore = useMyCompaniesStore()
+const companiesStore = useMyCompaniesStore();
 
 const setValue = (value, linkTo) => {
   if (value != "exhibitor") {
-    companiesStore.selectedCompany = {}
+    companiesStore.selectedCompany = {};
   }
-  console.log(inputsStore[linkTo]);
-  inputsStore[linkTo] = value
-}
-
+  inputsStore[linkTo] = value;
+};
 </script>
 
 <style scoped lang="scss">
 .input {
   display: flex;
   align-items: center;
-  gap: .3rem;
+  gap: 0.3rem;
   flex: 1;
   width: 100%;
   cursor: pointer;
@@ -69,7 +75,7 @@ const setValue = (value, linkTo) => {
     display: none;
 
     &:checked {
-      &+label {
+      & + label {
         .icon {
           scale: 1;
           opacity: 1;
@@ -103,9 +109,9 @@ const setValue = (value, linkTo) => {
       background: rgb(17, 50, 201);
       color: white;
       font-size: 1.5rem;
-      scale: .5;
+      scale: 0.5;
       opacity: 0;
-      transition: .1s;
+      transition: 0.1s;
     }
   }
 }

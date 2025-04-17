@@ -4,13 +4,35 @@ export const useMyCompaniesStore = defineStore({
   id: "myCompaniesStore",
   state: () => ({
     companies: [] as any,
-    filteredCompanies: [] as any,
     selectedCompany: {},
     canDoActions: true,
+    page: 1,
+    search: "",
+    companiesCount: 0,
+    limit: 50,
   }),
   actions: {
     async getCompanies() {
-      const router = useRouter();
+      const homeStore = useMyHomeStore();
+      const { runErrorToast } = useShadcnHelpers();
+      try {
+        const response: any = await $fetch(
+          `${homeStore.baseUrl}/api/company?page=${this.page}&search=${this.search}`,
+          {
+            method: "GET",
+            headers: homeStore.headers,
+          }
+        );
+        this.companies = response.companies;
+        this.companiesCount = response.pagination.totalCount;
+      } catch (error: any) {
+        runErrorToast({
+          title: "Something went wrong.",
+          message: error.statusMessage,
+        });
+      }
+    },
+    async getCompaniesOnly() {
       const homeStore = useMyHomeStore();
       const { runErrorToast } = useShadcnHelpers();
       try {
@@ -19,9 +41,8 @@ export const useMyCompaniesStore = defineStore({
           headers: homeStore.headers,
         });
         this.companies = response.companies;
-        this.filteredCompanies = response.companies;
+        this.companiesCount = response.pagination.totalCount;
       } catch (error: any) {
-        homeStore.handleError(error);
         runErrorToast({
           title: "Something went wrong.",
           message: error.statusMessage,

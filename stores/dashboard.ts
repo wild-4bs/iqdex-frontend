@@ -33,7 +33,6 @@ export const useMyDashboardStore = defineStore({
       const { runErrorToast } = useShadcnHelpers();
       try {
         if (!this.canGetUsers) return;
-        console.log(this.activeCasesString);
         this.startLoading();
         this.canGetUsers = false;
 

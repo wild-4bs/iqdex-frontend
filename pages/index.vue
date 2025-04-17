@@ -13,10 +13,10 @@
         </div>
         <div class="group">
           <div class="el gap-2 nestedGroup flex flex-col">
-            <CustomCombobox
+            <!-- <CustomCombobox
               :default-value="defaultValue"
               :options="countries"
-            />
+            /> -->
             <CustomInput
               link-to="phoneNumber"
               placeholder="Phone Number"
@@ -113,8 +113,8 @@
           v-html="registerButtonContent"
         ></button>
         <span class="clear cursor-pointer p-2 select-none" @click="clearData"
-          >Clear all</span
-        >
+          >Clear all
+        </span>
       </div>
     </form>
   </main>
@@ -122,10 +122,10 @@
 
 <script setup>
 const inputsStore = useMyInputsStore();
-const defaultValue = ref({});
+// const defaultValue = ref({});
 const companyError = ref(false);
-const countries = ref([]);
-const countriesStore = useMyCountriesStore();
+// const countries = ref([]);
+// const countriesStore = useMyCountriesStore();
 const sendViaError = ref(false);
 const pTypeError = ref(false);
 const registerButtonContent = ref("Register Badge");
@@ -144,34 +144,36 @@ onMounted(async () => {
   );
   homeStore.expired = response.badge_expired;
   navigateTo("/expired");
-  await companiesStore.getCompanies();
-  await countriesStore.getDefaultCountry();
-  if (JSON.stringify(countriesStore.defaultCountry) != "{}") {
-    defaultValue.value = {
-      flag: countriesStore.defaultCountry.flags.png,
-      name: countriesStore.defaultCountry.name.common,
-    };
-  }
-  await countriesStore.getCountries();
-  countries.value = countriesStore.countries.map(({ name, flags }) => {
-    const transformedCountry = {
-      label: name.common.toLowerCase(),
-      value: name.common,
-      flag: flags.png,
-    };
-    return transformedCountry;
-  });
+  companiesStore.limit = 400;
+  await companiesStore.getCompaniesOnly();
+  // await countriesStore.getDefaultCountry();
+  // if (JSON.stringify(countriesStore.defaultCountry) != "{}") {
+  //   defaultValue.value = {
+  //     flag: countriesStore.defaultCountry.flags.png,
+  //     name: countriesStore.defaultCountry.name.common,
+  //   };
+  // }
+  // await countriesStore.getCountries();
+  // countries.value = countriesStore.countries.map(({ name, flags }) => {
+  //   const transformedCountry = {
+  //     label: name.common.toLowerCase(),
+  //     value: name.common,
+  //     flag: flags.png,
+  //   };
+  //   return transformedCountry;
+  // });
 });
 
 const sendBadge = async () => {
   const inputs = [
     "firstName",
     "lastName",
-    "country",
+    // "country",
     "position",
     "companyName",
     "phoneNumber",
     "email",
+    "countryCode",
   ];
   const canSend = ref(true);
   const firstName = inputsStore.firstName.value;
@@ -180,6 +182,8 @@ const sendBadge = async () => {
   const email = inputsStore.email.value;
   const phoneNumber = inputsStore.phoneNumber.value;
   const position = inputsStore.position.value;
+  const country_code = inputsStore.countryCode.value;
+
   inputs.forEach((input) => {
     if (inputsStore.participationType != "exhibitor") {
       if (inputsStore[input].value == "") {
@@ -260,21 +264,17 @@ const sendBadge = async () => {
     }
   });
   if (hasError) return;
-  const selected = countriesStore.getSelectedCountry();
+  // const selected = countriesStore.getSelectedCountry();
 
-  const idd = selected.idd.root + selected.idd.suffixes[0];
-  console.log(idd);
+  // const idd = selected.idd.root + selected.idd.suffixes[0];
+  // console.log(idd);
 
   const formData = new FormData();
   formData.append("first_name", firstName);
   formData.append("last_name", lastName);
-  formData.append(
-    "phone_number",
-    idd.toString() + " " + phoneNumber.toString()
-  );
+  formData.append("phone_number", phoneNumber.toString());
   formData.append("email", email);
-  formData.append("country", selected.name.common);
-  formData.append("country_code", idd);
+  formData.append("country_code", country_code.toString());
   formData.append("position", position);
   formData.append("participation_type", inputsStore.participationType);
   formData.append("send_via", inputsStore.sendVia);
@@ -313,11 +313,12 @@ const clearData = () => {
   const inputs = [
     "firstName",
     "lastName",
-    "country",
+    // "country",
     "position",
     "companyName",
     "phoneNumber",
     "email",
+    "countryCode",
   ];
   inputs.forEach((input) => {
     inputsStore[input].value = "";

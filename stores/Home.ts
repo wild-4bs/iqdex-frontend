@@ -10,12 +10,9 @@ export const useMyHomeStore = defineStore({
   }),
   actions: {
     handleError(error: any) {
-      const cookies = new Cookies()
+      const cookies = new Cookies();
       if (error.statusCode == 401) {
-        cookies.remove('auth_token')
-        navigateTo('/login')
-      }
-      if (!error.statusCode) {
+        cookies.remove("auth_token");
         navigateTo("/login");
       }
     },

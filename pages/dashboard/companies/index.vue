@@ -2,30 +2,77 @@
   <div class="companies">
     <div class="helpers flex items-center justify-between">
       <div class="search">
-        <input type="text" @input="search" placeholder="Search..." v-model="searchInput">
+        <input
+          type="text"
+          @input="search"
+          placeholder="Search..."
+          v-model="companiesStore.search"
+        />
       </div>
       <div class="options">
         <DashboardCompaniesAdd />
       </div>
     </div>
     <DashboardCompaniesTable />
+    <Pagination
+      v-slot="{ page }"
+      :items-per-page="50"
+      :total="companiesStore.companiesCount"
+      :sibling-count="4"
+      show-edges
+      :default-page="companiesStore.page"
+      class="w-full"
+      v-model:page="companiesStore.page"
+    >
+      <PaginationList
+        v-slot="{ items }"
+        class="flex justify-center items-center gap-1"
+      >
+        <PaginationFirst />
+        <PaginationPrev />
+
+        <template v-for="(item, index) in items">
+          <PaginationListItem
+            v-if="item.type === 'page'"
+            :key="index"
+            :value="item.value"
+            as-child
+          >
+            <Button
+              class="w-10 h-10 p-0"
+              :variant="item.value === page ? 'default' : 'outline'"
+            >
+              {{ item.value }}
+            </Button>
+          </PaginationListItem>
+          <PaginationEllipsis v-else :key="item.type" :index="index" />
+        </template>
+
+        <PaginationNext />
+        <PaginationLast />
+      </PaginationList>
+    </Pagination>
   </div>
 </template>
 
 <script setup>
-const searchInput = ref('')
-const companiesStore = useMyCompaniesStore()
+const companiesStore = useMyCompaniesStore();
+
 const search = () => {
-  const regex = new RegExp(searchInput.value.split(/\s+/).join("|"), "i");
+  companiesStore.page = 1;
+  companiesStore.getCompanies();
+};
 
-  companiesStore.filteredCompanies = companiesStore.companies.filter(company =>
-    regex.test(company.name)
-  );
-}
+watch(
+  () => companiesStore.page,
+  () => {
+    companiesStore.getCompanies();
+  }
+);
 definePageMeta({
-  layout: "dashboard"
-})
-
+  layout: "dashboard",
+  middleware: "auth",
+});
 </script>
 
 <style scoped lang="scss">
@@ -59,7 +106,7 @@ definePageMeta({
         font-size: 20px;
         border: 1px solid transparent;
         border-radius: 50%;
-        transition: .2s;
+        transition: 0.2s;
 
         &:hover {
           border-color: lightgray;

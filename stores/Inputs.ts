@@ -11,10 +11,10 @@ export const useMyInputsStore = defineStore({
       value: "",
       error: false,
     },
-    country: {
-      value: "",
-      error: false,
-    },
+    // country: {
+    //   value: "",
+    //   error: false,
+    // },
     companyName: {
       value: "",
       error: false,
@@ -35,9 +35,13 @@ export const useMyInputsStore = defineStore({
       value: "",
       error: false,
     },
+    countryCode: {
+      value: "+",
+      error: false,
+    },
     participationType: "",
     sendVia: "",
-    countries: [],
+    // countries: [],
   }),
   actions: {},
 });
